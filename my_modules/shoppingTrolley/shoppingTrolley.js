@@ -7,7 +7,7 @@ module.exports = class Trolley {
      * @param  {Product[]} products The list of products of the trolley
      */
     constructor(products) {
-        this.products = products;
+        this.products = products == undefined ? [] : products;
     }
 
     /**
@@ -48,7 +48,7 @@ module.exports = class Trolley {
     addProduct(newProduct) {
         //Check if the newProduct is already in the trolley, by checking its id
         var productsList = this._products;
-        var alreadyInTrolley = productsList.filter(product => product.id === newProduct.id).length > 0 ? true : false;
+        var alreadyInTrolley = this._products.length == 0 ? false : productsList.filter(product => product.id === newProduct.id).length > 0 ? true : false;
 
         if(alreadyInTrolley) { //If already in the trolley, add amounts
             var productIndex = productsList.findIndex(product => product.id === newProduct.id);
@@ -80,9 +80,10 @@ module.exports = class Trolley {
      * @param  {Product} newProduct The new product that needs to be added to the trolley.
      */
     async addProductDB(newProduct) {
+        try{
         //Check if the newProduct is already in the trolley, by checking its id
-            var productsList = this._products;
-            var targetProduct = productsList.filter(product => product.id === newProduct.id);
+            var productsList = this._products == undefined ? [] : this._products;
+            var targetProduct = this._products == undefined ? false : productsList.filter(product => product.id === newProduct.id);
             var alreadyInTrolley = targetProduct.length > 0 ? true : false;
             var thereIsStock = await mongoClient.checkStock(newProduct.id, newProduct.amount);
             console.log("--- CHECKING STOCK ---\n");
@@ -97,6 +98,9 @@ module.exports = class Trolley {
             
             } else{
                 console.log("--- NO STOCK AVAILABLE ---\n");
-            }       
+            } 
+        } catch (error) {
+            console.log(error)
+        }     
     }
 }

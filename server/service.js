@@ -1,10 +1,10 @@
 const express = require('express');
 const ServiceRegistry = require('./lib/ServiceRegistry');
-const Trolley = require(my_modules/shoppingTrolley.js);
-const Product = require(my_modules/shoppingProduct.js);
+const Trolley = require('../my_modules/shoppingTrolley/shoppingTrolley');
+const Product = require('../my_modules/shoppingTrolley/shoppingProduct');
 
 var registeredTrolley = false;
-var trolley = new shoppingTrolley();
+var trolley = new Trolley();
 
 const service = express();
 
@@ -21,7 +21,7 @@ module.exports = (config) => {
   }
 
   //If the trolley is not registered yet, it is registered.
-  service.put('/register/trolley', (req, res) => {
+  service.put('/trolley', (req, res) => {
     if(!registeredTrolley){
       serviceRegistry.register('sad', '1.0.0', 'localhost', '3000');
       registeredTrolley = true;
@@ -80,8 +80,8 @@ module.exports = (config) => {
       var id = parseInt(req.params.id);
       var amount = parseInt(req.params.amount);
       var product = new Product(id, pName, description, price, amount);
-      trolley.addProduct(product);
-      res.send(trolley); 
+      trolley.addProductDB(product);
+      setTimeout(()=>{res.send(trolley);},2000);
     }
   });
 
@@ -136,7 +136,7 @@ module.exports = (config) => {
       serviceRegistry.unregister('sad', '1.0.0', 'localhost', '3000');
       res.send('Trolley unregistered succesfully');
       registeredTrolley = false;
-      trolley = new shoppingTrolley();
+      trolley = new Trolley();
     }
   });
 
